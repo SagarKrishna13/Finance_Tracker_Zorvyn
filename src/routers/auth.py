@@ -8,10 +8,10 @@ No business logic lives here.
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
-from app.schemas.user import UserRegisterRequest, UserLoginRequest, UserResponse, TokenResponse
-from app.schemas.common import SuccessResponse
-from app.services import user_service
+from src.core.database import get_db
+from src.schemas.user import UserRegisterRequest, UserLoginRequest, UserResponse, TokenResponse
+from src.schemas.common import SuccessResponse
+from src.services import user_service
 
 router = APIRouter()
 

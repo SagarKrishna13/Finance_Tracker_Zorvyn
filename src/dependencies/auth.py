@@ -14,10 +14,10 @@ from jose import JWTError
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
-from app.core.security import decode_access_token
-from app.exceptions import UnauthorizedError, ForbiddenError
-from app.models.user import User, UserRole
+from src.core.database import get_db
+from src.core.security import decode_access_token
+from src.exceptions import UnauthorizedError, ForbiddenError
+from src.models.user import User, UserRole
 
 # auto_error=False so missing token does not raise 401 automatically
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)

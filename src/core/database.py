@@ -11,7 +11,7 @@ closed after the request completes, even on errors.
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from app.core.config import settings
+from src.core.config import settings
 
 # connect_args is only needed for SQLite (disables same-thread check)
 connect_args = (

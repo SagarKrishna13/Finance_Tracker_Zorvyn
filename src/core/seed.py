@@ -15,15 +15,15 @@ sys.path.insert(0, os.path.dirname(__file__))
 from datetime import date, timedelta
 import random
 
-from app.core.database import Base, engine, SessionLocal
-from app.core.security import hash_password
-from app.models.user import User, UserRole
-from app.models.transaction import Transaction, TransactionType, TransactionCategory
+from src.core.database import Base, engine, SessionLocal
+from src.core.security import hash_password
+from src.models.user import User, UserRole
+from src.models.transaction import Transaction, TransactionType, TransactionCategory
 
 
 def run():
     # Force fresh tables (handled by main.py usually, but good for direct CLI use)
-    from app.models import user, transaction  # noqa: F401
+    from src.models import user, transaction  # noqa: F401
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()

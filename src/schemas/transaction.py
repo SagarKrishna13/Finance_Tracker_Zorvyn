@@ -8,7 +8,7 @@ Cross-field and DB-dependent rules are enforced in transaction_service.py.
 from typing import Optional
 from datetime import date
 from pydantic import BaseModel, field_validator, model_validator, ConfigDict
-from app.models.transaction import TransactionType, TransactionCategory
+from src.models.transaction import TransactionType, TransactionCategory
 
 
 # ---------------------------------------------------------------------------

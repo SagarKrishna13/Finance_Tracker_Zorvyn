@@ -16,10 +16,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.core.config import settings
-from app.core.database import Base, engine
-from app.exceptions import AppError
-from app.routers import auth, transactions, analytics
+from src.core.config import settings
+from src.core.database import Base, engine
+from src.exceptions import AppError
+from src.routers import auth, transactions, analytics
 
 # Structured logging - shows in uvicorn output and is easy to grep
 logging.basicConfig(
@@ -36,17 +36,11 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Import models so SQLAlchemy registers them
-    from app.models import user, transaction  # noqa: F401
-    from app.core.seed import run as seed_db
-
-    # Always drop logic to ensure a fresh app startup state 
-    Base.metadata.drop_all(bind=engine)
-    logger.info("Database tables dropped for fresh start")
-
-    # Create tables and run seed
+    from src.models import user, transaction  # noqa: F401
+    
+    # Safe initialization (does not drop tables)
     Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created / verified")
-    seed_db()
+    logger.info("Database initialized successfully")
     
     yield
     logger.info("Application shutting down")
@@ -147,22 +141,20 @@ app.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 
 
 # ---------------------------------------------------------------------------
-# Health check
+# Core endpoints
 # ---------------------------------------------------------------------------
 
-@app.get("/api/health", tags=["Health"], summary="API health check")
-def health_check():
+@app.get("/", tags=["Core"], summary="API Root endpoint")
+def root():
+    return {"status": "running"}
+
+@app.get("/health", tags=["Health"], summary="API health check")
+def default_health():
+    return {"status": "ok"}
+
+@app.get("/api/health", tags=["Health"], summary="Detailed health check")
+def api_health_check():
     return {
         "success": True,
         "message": f"{settings.APP_NAME} v{settings.APP_VERSION} is running",
     }
-
-# ---------------------------------------------------------------------------
-# Frontend Static Files
-# ---------------------------------------------------------------------------
-
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # This is /app
-FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend"))
-
-app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

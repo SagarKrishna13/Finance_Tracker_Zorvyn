@@ -9,10 +9,10 @@ Rules enforced here (not in the router):
 
 from sqlalchemy.orm import Session
 
-from app.core.security import hash_password, verify_password, create_access_token
-from app.exceptions import ConflictError, UnauthorizedError
-from app.models.user import User, UserRole
-from app.schemas.user import UserRegisterRequest
+from src.core.security import hash_password, verify_password, create_access_token
+from src.exceptions import ConflictError, UnauthorizedError
+from src.models.user import User, UserRole
+from src.schemas.user import UserRegisterRequest
 
 
 def register_user(db: Session, payload: UserRegisterRequest) -> User:

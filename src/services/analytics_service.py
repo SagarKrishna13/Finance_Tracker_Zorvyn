@@ -17,8 +17,8 @@ from datetime import date, datetime
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.transaction import Transaction, TransactionType
-from app.models.user import User, UserRole
+from src.models.transaction import Transaction, TransactionType
+from src.models.user import User, UserRole
 
 
 # ---------------------------------------------------------------------------

@@ -12,7 +12,7 @@ from sqlalchemy import (
     DateTime, Enum, ForeignKey, Text
 )
 from sqlalchemy.orm import relationship
-from app.core.database import Base
+from src.core.database import Base
 
 
 class TransactionType(str, enum.Enum):

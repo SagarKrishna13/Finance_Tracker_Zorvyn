@@ -12,11 +12,11 @@ Endpoints:
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
-from app.dependencies.auth import get_public_user
-from app.models.user import User
-from app.schemas.common import SuccessResponse
-from app.services import analytics_service
+from src.core.database import get_db
+from src.dependencies.auth import get_public_user
+from src.models.user import User
+from src.schemas.common import SuccessResponse
+from src.services import analytics_service
 
 router = APIRouter()
 

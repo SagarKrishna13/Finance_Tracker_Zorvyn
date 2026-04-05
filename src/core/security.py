@@ -8,7 +8,7 @@ making them trivially unit-testable.
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from app.core.config import settings
+from src.core.config import settings
 
 # bcrypt is the industry standard for password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

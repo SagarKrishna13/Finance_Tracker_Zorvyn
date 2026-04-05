@@ -7,7 +7,7 @@ Business-rule validation (duplicate email etc.) lives in user_service.py.
 
 import re
 from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
-from app.models.user import UserRole
+from src.models.user import UserRole
 
 
 # ---------------------------------------------------------------------------

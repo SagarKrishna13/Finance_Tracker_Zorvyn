@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 #### 4. Run the Application
 ```bash
-uvicorn app.main:app --port 8000
+uvicorn src.main:app --port 8000
 ```
 *The server will start at [http://localhost:8000](http://localhost:8000)*
 

@@ -15,6 +15,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import settings
 from src.core.database import Base, engine
@@ -58,6 +59,15 @@ app = FastAPI(
         "Supports CRUD, pagination, search, analytics, and CSV/JSON export."
     ),
     lifespan=lifespan,
+)
+
+# CORS middleware configuration (permissive)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

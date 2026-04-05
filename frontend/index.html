@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Tracker | Dashboard</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* Additional Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-modal {
+      width: 100%;
+      max-width: 400px;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Animated Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Loader -->
+  <div id="loader" class="glass-panel hidden">
+      <div class="spinner"></div>
+  </div>
+
+  <!-- Auth Modal (Hidden by default) -->
+  <div id="auth-modal" class="modal-overlay hidden">
+      <div class="glass-panel auth-panel auth-modal">
+          <div class="logo-area">
+              <i class="fa-solid fa-lock gradient-text"></i>
+              <h1 class="gradient-text">Admin Login</h1>
+              <p>Sign in to enable edit/delete actions.</p>
+          </div>
+          <form id="login-form">
+              <div class="input-group">
+                  <i class="fa-solid fa-envelope"></i>
+                  <input type="email" id="email" placeholder="Email Address" required value="admin@demo.com">
+              </div>
+              <div class="input-group">
+                  <i class="fa-solid fa-lock"></i>
+                  <input type="password" id="password" placeholder="Password" required value="Admin1234">
+              </div>
+              <p id="login-error" class="error-msg hidden"></p>
+              <div style="display:flex; gap: 10px;">
+                  <button type="submit" class="btn-primary">Sign In</button>
+                  <button type="button" class="btn-primary" style="background:rgba(255,255,255,0.1)" onclick="document.getElementById('auth-modal').classList.add('hidden')">Cancel</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <!-- Dashboard Screen (Visible by default) -->
+  <div id="dashboard-screen" class="dashboard-layout view-section">
+      
+      <!-- Side Navigation -->
+      <nav class="glass-panel sidebar">
+          <div class="sidebar-brand">
+              <i class="fa-solid fa-wallet gradient-text"></i>
+              <h2>FinTrack</h2>
+          </div>
+          
+          <ul class="nav-links">
+              <li class="active" data-tab="summary"><i class="fa-solid fa-chart-pie"></i> Summary</li>
+              <li data-tab="recent"><i class="fa-solid fa-list-ul"></i> Activity</li>
+              <li data-tab="charts"><i class="fa-solid fa-chart-line"></i> Analytics</li>
+              <li data-tab="manage"><i class="fa-solid fa-plus-circle"></i> Add Transaction</li>
+          </ul>
+
+          <div class="user-profile">
+              <div class="avatar"><i class="fa-solid fa-user"></i></div>
+              <div class="user-info">
+                  <h4 id="user-name">Public User</h4>
+                  <span id="user-role" class="badge">Guest</span>
+              </div>
+              <button id="admin-login-btn" class="btn-icon" title="Admin Login"><i class="fa-solid fa-right-to-bracket"></i></button>
+              <button id="logout-btn" class="btn-icon hidden" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+          </div>
+      </nav>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+          <header class="top-bar glass-panel">
+              <h2 id="current-view-title">Dashboard Summary</h2>
+              <div style="display:flex; gap: 10px; align-items:center;">
+                  <div id="download-report-area" style="display:flex; gap:8px; align-items:center;">
+                      <select id="report-format" style="padding:6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.07); color: inherit; font-size: 0.85rem; cursor:pointer;">
+                          <option value="csv">CSV</option>
+                          <option value="json">JSON</option>
+                      </select>
+                      <button id="download-report-btn" class="btn-primary" title="Download Report">
+                          <i class="fa-solid fa-download"></i> Download Report
+                      </button>
+                  </div>
+                  <button id="add-txn-nav-btn" class="btn-primary">
+                      <i class="fa-solid fa-plus"></i> New Transaction
+                  </button>
+              </div>
+          </header>
+
+          <div class="scrollable-content">
+              
+              <!-- Tab: Summary -->
+              <section id="tab-summary" class="tab-pane active">
+                  <div class="kpi-grid">
+                      <div class="glass-panel kpi-card">
+                          <div class="kpi-icon income"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                          <div class="kpi-data">
+                              <h3>Total Income</h3>
+                              <p id="kpi-income">₹0.00</p>
+                          </div>
+                      </div>
+                      <div class="glass-panel kpi-card">
+                          <div class="kpi-icon expense"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                          <div class="kpi-data">
+                              <h3>Total Expenses</h3>
+                              <p id="kpi-expense">₹0.00</p>
+                          </div>
+                      </div>
+                      <div class="glass-panel kpi-card">
+                          <div class="kpi-icon net"><i class="fa-solid fa-scale-balanced"></i></div>
+                          <div class="kpi-data">
+                              <h3>Net Balance</h3>
+                              <p id="kpi-balance">₹0.00</p>
+                          </div>
+                      </div>
+                      <div class="glass-panel kpi-card">
+                          <div class="kpi-icon count"><i class="fa-solid fa-hashtag"></i></div>
+                          <div class="kpi-data">
+                              <h3>Transactions</h3>
+                              <p id="kpi-count">0</p>
+                          </div>
+                      </div>
+                      <div class="glass-panel kpi-card">
+                          <div id="kpi-trend-icon" class="kpi-icon trend"><i class="fa-solid fa-chart-line"></i></div>
+                          <div class="kpi-data">
+                              <h3>Monthly Trend</h3>
+                              <p id="kpi-trend-val" style="font-size: 0.9rem; color: var(--text-dim);">Loading trend...</p>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+
+              <!-- Tab: Recent Activity -->
+              <section id="tab-recent" class="tab-pane hidden">
+                  <div class="glass-panel table-wrapper">
+                      <h3>Recent Transactions</h3>
+                      <table class="data-table">
+                          <thead>
+                              <tr>
+                                  <th>Date</th>
+                                  <th>Category</th>
+                                  <th>Notes</th>
+                                  <th>Amount</th>
+                                  <th>Balance After</th>
+                                  <th class="td-actions admin-only hidden">Actions</th>
+                              </tr>
+                          </thead>
+                          <tbody id="recent-tbody">
+                              <!-- JS INJECTED -->
+                          </tbody>
+                      </table>
+                  </div>
+              </section>
+
+              <!-- Tab: Charts -->
+              <section id="tab-charts" class="tab-pane hidden">
+                  <div class="chart-grid">
+                      <div class="glass-panel chart-card full-width">
+                          <h3>Monthly Trend (Last 6 Months)</h3>
+                          <canvas id="monthlyChart"></canvas>
+                      </div>
+                      <div class="glass-panel chart-card">
+                          <h3>Income Breakdown</h3>
+                          <canvas id="incomePieChart"></canvas>
+                      </div>
+                      <div class="glass-panel chart-card">
+                          <h3>Expense Breakdown</h3>
+                          <canvas id="expensePieChart"></canvas>
+                      </div>
+                  </div>
+              </section>
+
+              <!-- Tab: Manage -->
+              <section id="tab-manage" class="tab-pane hidden">
+                  <div class="glass-panel form-panel">
+                      <h3>Add New Transaction</h3>
+                      <form id="txn-form">
+                          <div class="form-grid">
+                              <div class="input-group">
+                                  <label>Amount (₹)</label>
+                                  <input type="number" id="txn-amount" step="0.01" min="0.01" required>
+                              </div>
+                              <div class="input-group">
+                                  <label>Type</label>
+                                  <select id="txn-type" required>
+                                      <option value="income">Income</option>
+                                      <option value="expense">Expense</option>
+                                  </select>
+                              </div>
+                              <div class="input-group">
+                                  <label>Category</label>
+                                  <select id="txn-category" required>
+                                      <option value="salary">Salary</option>
+                                      <option value="freelance">Freelance</option>
+                                      <option value="investment">Investment</option>
+                                      <option value="food">Food</option>
+                                      <option value="rent">Rent</option>
+                                      <option value="transport">Transport</option>
+                                      <option value="utilities">Utilities</option>
+                                      <option value="healthcare">Healthcare</option>
+                                      <option value="entertainment">Entertainment</option>
+                                      <option value="education">Education</option>
+                                      <option value="shopping">Shopping</option>
+                                      <option value="other">Other</option>
+                                  </select>
+                              </div>
+                              <div class="input-group">
+                                  <label>Date</label>
+                                  <input type="date" id="txn-date" required>
+                              </div>
+                              <div class="input-group full-width">
+                                  <label>Notes</label>
+                                  <input type="text" id="txn-notes" placeholder="Description of the transaction">
+                              </div>
+                          </div>
+                          <p id="form-msg" class="msg hidden"></p>
+                          <button type="submit" class="btn-primary mt-3">Submit Transaction</button>
+                      </form>
+                  </div>
+              </section>
+
+              <!-- Edit Modal -->
+              <div id="edit-modal" class="modal-overlay hidden">
+                  <div class="glass-panel form-panel" style="width:100%; max-width:600px; margin:20px;">
+                      <h3>Edit Transaction</h3>
+                      <form id="edit-form">
+                          <input type="hidden" id="edit-id">
+                          <div class="form-grid">
+                              <div class="input-group">
+                                  <label>Amount (₹)</label>
+                                  <input type="number" id="edit-amount" step="0.01" min="0.01">
+                              </div>
+                              <div class="input-group">
+                                  <label>Type</label>
+                                  <select id="edit-type">
+                                      <option value="income">Income</option>
+                                      <option value="expense">Expense</option>
+                                  </select>
+                              </div>
+                              <div class="input-group">
+                                  <label>Category</label>
+                                  <select id="edit-category">
+                                      <option value="salary">Salary</option>
+                                      <option value="freelance">Freelance</option>
+                                      <option value="investment">Investment</option>
+                                      <option value="food">Food</option>
+                                      <option value="rent">Rent</option>
+                                      <option value="transport">Transport</option>
+                                      <option value="utilities">Utilities</option>
+                                      <option value="healthcare">Healthcare</option>
+                                      <option value="entertainment">Entertainment</option>
+                                      <option value="education">Education</option>
+                                      <option value="shopping">Shopping</option>
+                                      <option value="other">Other</option>
+                                  </select>
+                              </div>
+                              <div class="input-group">
+                                  <label>Date</label>
+                                  <input type="date" id="edit-date">
+                              </div>
+                              <div class="input-group full-width">
+                                  <label>Notes</label>
+                                  <input type="text" id="edit-notes" placeholder="Description of the transaction">
+                              </div>
+                          </div>
+                          <p id="edit-msg" class="msg hidden"></p>
+                          <div style="display:flex; gap: 10px; margin-top: 15px;">
+                              <button type="submit" class="btn-primary">Save Changes</button>
+                              <button type="button" class="btn-primary" style="background:var(--danger)" onclick="document.getElementById('edit-modal').classList.add('hidden')">Cancel</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+
+          </div>
+      </main>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
